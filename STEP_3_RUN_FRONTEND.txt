@@ -1,0 +1,93 @@
+STEP 3 – RUNNING THE FRONTEND (Dr. Ambedkar AI)
+
+This step starts the frontend that connects to the backend API and plays the audio.
+
+-------------------------------------
+
+1. Make sure backend is already running
+
+Open a terminal and check:
+
+http://127.0.0.1:8000/docs
+
+If it opens, backend is working.
+
+If not, run:
+
+cd Desktop\BrAmbedkarProject\Dr.Ambedkar-Rag
+uvicorn api:app --reload
+
+Keep this terminal open.
+
+-------------------------------------
+
+2. Open a NEW terminal window
+
+Now move to frontend folder:
+
+cd Desktop\BrAmbedkarProject\frontend
+
+-------------------------------------
+
+3. Start frontend server
+
+Run:
+
+python -m http.server 5500
+
+You should see:
+
+Serving HTTP on :: port 5500
+
+Do NOT close this terminal.
+
+-------------------------------------
+
+4. Open browser
+
+Go to:
+
+http://localhost:5500
+
+You will see the frontend page.
+
+-------------------------------------
+
+5. Ask a question
+
+Type:
+Who was Dr. B. R. Ambedkar?
+
+Click "Ask"
+
+What should happen:
+- Answer text appears
+- A .wav audio file is generated
+- Audio plays automatically
+
+-------------------------------------
+
+6. If audio plays, STEP 3 is successful
+
+Your frontend is now connected to:
+
+Frontend → Backend → RAG → Audio → Frontend
+
+-------------------------------------
+
+IMPORTANT NOTES:
+
+• Backend must always run before frontend  
+• Use TWO terminals:
+  - One for backend
+  - One for frontend  
+
+• Backend URL:
+  http://127.0.0.1:8000
+
+• Frontend URL:
+  http://localhost:5500
+
+-------------------------------------
+
+STEP 3 COMPLETED SUCCESSFULLY 🎉
