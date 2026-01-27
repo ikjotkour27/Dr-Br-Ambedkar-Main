@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+qdrant-client
+sentence-transformers
+google-genai
+python-dotenv
+numpy
+
+python-dotenv
+pyttsx3
