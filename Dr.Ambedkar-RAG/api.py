@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 from rag import answer_question
 import uuid
 import os
-import pyttsx3 
+import threading
+import pyttsx3
 
 print("API loaded")
 load_dotenv()
@@ -17,47 +18,56 @@ app = FastAPI(
     version="1.0"
 )
 
+# ✅ REQUIRED FOR RENDER (DO NOT REMOVE)
+@app.get("/")
+def health():
+    return {"status": "API running"}
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Folder to store generated audio
+# Audio directory
 AUDIO_DIR = "audio"
 os.makedirs(AUDIO_DIR, exist_ok=True)
 
-# Serve audio files
 app.mount("/audio", StaticFiles(directory=AUDIO_DIR), name="audio")
-
 
 class Query(BaseModel):
     question: str
 
 
-def text_to_speech(text: str, file_path: str):
-    engine = pyttsx3.init()
-    engine.save_to_file(text, file_path)
-    engine.runAndWait()
+# ✅ SAFE TTS (Render-compatible)
+def text_to_speech_safe(text: str, file_path: str):
+    try:
+        engine = pyttsx3.init()
+        engine.save_to_file(text, file_path)
+        engine.runAndWait()
+        engine.stop()
+    except Exception as e:
+        print("TTS failed:", e)
 
 
 @app.post("/ask")
 def ask_question(query: Query):
-    # 1. Get RAG answer
     answer = answer_question(query.question)
 
-    # 2. Create unique audio file
     audio_filename = f"{uuid.uuid4()}.wav"
     audio_path = os.path.join(AUDIO_DIR, audio_filename)
 
-    # 3. Convert answer to speech
-    text_to_speech(answer, audio_path)
+    # ✅ Run TTS in background thread (NON-BLOCKING)
+    threading.Thread(
+        target=text_to_speech_safe,
+        args=(answer, audio_path),
+        daemon=True
+    ).start()
 
-    # 4. Return response
     return {
         "question": query.question,
         "answer": answer,
-        "audio_url": f"http://localhost:8000/audio/{audio_filename}"
+        "audio_url": f"/audio/{audio_filename}"
     }
